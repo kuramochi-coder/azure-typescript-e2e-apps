@@ -16,7 +16,8 @@
   },
   "dependencies": {
     "@azure/functions": "^4.0.0-alpha.9",
-    "@azure/storage-blob": "^12.14.0"
+    "@azure/storage-blob": "^12.14.0",
+    "azure-functions-core-tools": "^4.0.5274"
   },
   "devDependencies": {
     "@types/node": "^18.17.1",
