@@ -9,6 +9,7 @@ import './App.css';
 
 // Used only for local development
 const API_SERVER = import.meta.env.VITE_API_SERVER as string;
+const CONTAINER_NAME = import.meta.env.VITE_CONTAINER_NAME as string;
 
 const request = axios.create({
   baseURL: API_SERVER,
@@ -25,7 +26,7 @@ type ListResponse = {
 };
 
 function App() {
-  const containerName = `upload`;
+  const containerName = CONTAINER_NAME;
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [sasTokenUrl, setSasTokenUrl] = useState<string>('');
   const [uploadStatus, setUploadStatus] = useState<string>('');
