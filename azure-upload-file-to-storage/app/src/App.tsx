@@ -9,12 +9,22 @@ import './App.css';
 
 // Used only for local development
 const API_SERVER = import.meta.env.VITE_API_SERVER as string;
+const VITE_API_SERVER_2 = import.meta.env.VITE_API_SERVER_2 as string; // python flask server
 const CONTAINER_NAME = import.meta.env.VITE_CONTAINER_NAME as string;
 
 const request = axios.create({
   baseURL: API_SERVER,
   headers: {
     'Content-type': 'application/json'
+  }
+});
+
+// add another request for content type multipart/form-data
+const requestFormData = axios.create({
+  // The API server is pointing to a python flask server at port 8999
+  baseURL: VITE_API_SERVER_2,
+  headers: {
+    'Content-type': 'multipart/form-data'
   }
 });
 
@@ -119,6 +129,48 @@ function App() {
       });
   };
 
+  const handleFileUploadServerSide = () => {
+    if (sasTokenUrl === '') return;
+    // if selected file is empty or is missing name return
+    if (!selectedFile || !selectedFile.name) return;
+
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+    formData.append('sasTokenUrl', sasTokenUrl);
+
+    // send file to server side along with sas token
+    requestFormData
+      .post(
+        `/api/files`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      )
+      .then(() => {
+        setUploadStatus('Successfully finished upload');
+        return request.get(`/api/list?container=${containerName}`);
+      })
+      .then((result: AxiosResponse<ListResponse>) => {
+        // Axios response
+        const { data } = result;
+        const { list } = data;
+        setList(list);
+      })
+      .catch((error: unknown) => {
+        if (error instanceof Error) {
+          const { message, stack } = error;
+          setUploadStatus(
+            `Failed to finish upload with error : ${message} ${stack || ''}`
+          );
+        } else {
+          setUploadStatus(error as string);
+        }
+      });
+  };
+
   return (
     <>
       <ErrorBoundary>
@@ -184,6 +236,9 @@ function App() {
             >
               <Button variant="contained" onClick={handleFileUpload}>
                 Upload
+              </Button>
+              <Button variant="contained" onClick={handleFileUploadServerSide}>
+                Upload Server Side
               </Button>
               {uploadStatus && (
                 <Box my={2}>

@@ -13,7 +13,9 @@
     "install:functions": "npm install azure-functions-core-tools@4.0.5095 --save-exact --unsafe-perm tru",
     "install:swa": "npm install -g @azure/static-web-apps-cli"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/multer": "^1.4.7"
+  },
   "workspaces": [
     "lib-openai/",
     "cli-openai/"
